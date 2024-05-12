@@ -418,7 +418,6 @@ int main( int argc, char *argv[] )
         fprintf(stderr, "Usage: %s filename [src [dst]]\n", argv[0]);
         return EXIT_FAILURE;
     }
-
     if (strcmp(argv[1], "-") != 0) {
         filein = fopen(argv[1], "r");
         if (filein == NULL) {
@@ -432,9 +431,9 @@ int main( int argc, char *argv[] )
 
     if (argc > 3)
         dst = atoi(argv[3]);
-
     G = graph_read_from_file(filein);
     n = graph_n_nodes(G);
+    printf("sono qui 2\n");
     assert((src >= 0) && (src < n));
     assert((dst < 0) || ( (dst >= 0) && (dst < n) ));
 
