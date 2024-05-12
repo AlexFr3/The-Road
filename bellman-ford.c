@@ -1,28 +1,5 @@
 /****************************************************************************
- *
- * bellman-ford.c -- Algoritmo di Bellman-Ford
- *
- * Copyright (C) 2021--2024 Moreno Marzolla
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- ****************************************************************************/
-
-/***
-% LabASD - Algoritmo di Bellman-Ford
-% Moreno Marzolla <moreno.marzolla@unibo.it>
-% Ultimo aggiornamento: 2024-05-09
+ 
 
 Questo esercizio richiede di implementare l'algoritmo di Bellman-Ford
 per il calcolo del cammini minimi da singola sorgente in un grafo
@@ -294,18 +271,6 @@ Possibili soluzioni:
 
 Nei processori recenti e usando una versione recente di `gcc` non
 dovrebbe servire nessuna delle "pezze" di cui sopra.
-
-
-## File
-
-- [bellman-ford.c](bellman-ford.c)
-- [graph.c](../solutions/graph.c)
-- [graph.h](../solutions/graph.h)
-- [graph-negative-cycle.in](graph-negative-cycle.in): questo grafo ha cicli negativi, per cui usando il nodo 0 come sorgente il programma deve stampare un messaggio di errore.
-- [graph10.in](graph10.in) ([risultato atteso usando il nodo 0 come sorgente](graph10-bf.out))
-- [graph100.in](graph100.in)
-- [graph1000.in](graph1000.in)
-
 ***/
 
 #include <stdio.h>
