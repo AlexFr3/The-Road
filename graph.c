@@ -387,13 +387,17 @@ Graph *graph_read_from_file(FILE *f)
     int i; /* numero archi letti dal file */
     double weight;
     Graph *g;
-
+    const int Ccell;
     assert(f != NULL);
-
-    if (3 != fscanf(f, "%d %d %d", &n, &m, &t)) {
+    
+    if (4 != fscanf(f, "%d \n %lu \n %d \n %d \n",&Ccell, &weight, &n, &m)) {
         fprintf(stderr, "ERRORE durante la lettura dell'intestazione del grafo\n");
         abort();
     };
+    printf("Ccell = %d\n", Ccell);
+    printf("weight = %lu\n", weight);
+    printf("n = %d\n", n);
+    printf("m = %d\n", m);
     assert( n > 0 );
     assert( m >= 0 );
     assert( (t == GRAPH_UNDIRECTED) || (t == GRAPH_DIRECTED) );
