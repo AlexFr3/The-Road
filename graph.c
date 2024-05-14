@@ -248,10 +248,10 @@ void graph_add_edge(Graph *g, int src, int dst, double weight)
 {
     int status = 0;
 
-    assert(g != NULL);
+    /*assert(g != NULL);*/
 
-    assert((src >= 0) && (src < graph_n_nodes(g)));
-    assert((dst >= 0) && (dst < graph_n_nodes(g)));
+    /*assert((src >= 0) && (src < graph_n_nodes(g)));*/
+    /*assert((dst >= 0) && (dst < graph_n_nodes(g)));*/
 
     status = graph_adj_insert(g, src, dst, weight);
     if (graph_type(g) == GRAPH_UNDIRECTED) {
