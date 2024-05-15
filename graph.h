@@ -38,7 +38,6 @@ typedef enum { GRAPH_UNDIRECTED, GRAPH_DIRECTED } Graph_type;
 typedef struct {
     int n;              /* numero di nodi               */
     int m;              /* numero di archi              */
-    Graph_type t;       /* tipo di grafo (orientato/non orientato) */
     Edge **edges;       /* array di liste di adiacenza  */
     int *in_deg;        /* grado entrante dei nodi      */
     int *out_deg;       /* grado uscente dei nodi       */
@@ -47,14 +46,11 @@ typedef struct {
 /* Crea un nuovo grafo con `n` nodi. Il numero di nodi deve essere
    strettamente positivo. Il tipo di grafo (orientato oppure non
    orientato) è specificato dal parametro `t`. */
-Graph *graph_create(int n, Graph_type t);
+Graph *graph_create(int n);
 
 /* Libera tutta la memoria occupata dal grafo e dalle liste di
    adiacenza */
 void graph_destroy(Graph *g);
-
-/* Restituisce il tipo di grafo */
-Graph_type graph_type(const Graph *g);
 
 /* Aggiunge un nuovo arco (src, dst) con peso "weight". Si può
    assumere che l'arco non esista già (si può omettere il controllo,
