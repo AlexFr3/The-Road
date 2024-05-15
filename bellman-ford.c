@@ -327,10 +327,13 @@ int relax( const Edge *e, double *d, int *p, const Edge **sp )
 
    - true (non-zero) se ci sono cicli negativi, 0 altrimenti.
 */
+void inizialize(const Graph *g, int s){
+  
+}
+
 int bellman_ford( const Graph *g, int s, double *d, int *p, const Edge **sp )
-{
-    /* [TODO] */
-    return 0;
+{ 
+  inizialize(g,s);/*s punto di partenza da 0, G è il grafo*/
 }
 
 /* Stampa l'elenco degli archi dell'albero dei cammini minimi nello
@@ -426,14 +429,14 @@ int main( int argc, char *argv[] )
         }
     }
 
-    if (argc > 2)
+    /*if (argc > 2)
         src = atoi(argv[2]);
 
     if (argc > 3)
-        dst = atoi(argv[3]);
-    G = graph_read_from_file(filein);
-    n = graph_n_nodes(G);
-    printf("sono qui 2\n");
+        dst = atoi(argv[3]);*/
+
+    G = graph_read_from_file(filein);/*crea il grafo dal file*/
+    n = graph_n_nodes(G);/*restituisce le righe della matrice*/
     assert((src >= 0) && (src < n));
     assert((dst < 0) || ( (dst >= 0) && (dst < n) ));
 
