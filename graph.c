@@ -276,11 +276,11 @@ static Edge *graph_adj_remove(Edge *adj, int dst, int *deleted)
     }
 }
 
-int graph_n_nodes(const Graph *g)
+int graph_n_nodes(const Matrix *mat)
 {
-    assert(g != NULL);
+    assert(mat != NULL);
 
-    return g->n;
+    return mat->n;
 }
 
 int graph_n_edges(const Graph *g)
@@ -332,61 +332,77 @@ void graph_print(const Graph *g)
     }
 }
 
+int create_matrix(n,m)
+{
+    int i,j;
+    int mat[n][m];
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < m; j++)
+        {
+            mat[i][j] = 0;
+        }
+    }
+    return mat;
+}
 Graph *graph_read_from_file(FILE *f)
 {
     int n, m;
     int src, dst;
     int i,j; /* numero archi letti dal file */
     int weight;
+    int Cheight;
     Graph *g;
     const int Ccell;
+    char c; 
+    int mat[ROWS][COLS];
     assert(f != NULL);
     
-    if (4 != fscanf(f, "%d \n %d \n %d \n %d \n",&Ccell, &weight, &n, &m)) {
+    if (4 != fscanf(f, "%d \n %d \n %d \n %d \n",&Ccell, &Cheight, &n, &m)) {
         fprintf(stderr, "ERRORE durante la lettura dell'intestazione del grafo\n");
         abort();
     };
+   
+    
     printf("Ccell = %d\n", Ccell);
-    printf("weight = %d \n", weight);
+    printf("weight = %d \n", Cheight);
     printf("n = %d\n", n);
     printf("m = %d\n", m);
     assert( n > 0 );
     assert( m >= 0 );
-
+    mat=create_matrix(n,m);
+    i = 0; 
+    j = 0; 
+    for (i = 0; i < n; i++) { 
+        for (j = 0; j <m; j++) { 
+            fscanf(f, "%c", &c); 
+            mat[i][j] =(int)c; 
+        } /*
+        if (j == m-1) { 
+            fscanf(f, "%c\n", &c); 
+            mat[i][j] = (int)c; 
+        } */
+    } 
+    i = 0;
+    j=0;
+    for ( i = 0; i < n; i++)
+    {
+        for ( j = 0; j < m; j++)
+        {
+            printf(" %d", mat[i][j]);
+        }
+        printf("\n");
+    }
     g = graph_create(n);
     /* Ciclo di lettura degli archi. Per rendere il programma più
        robusto, meglio non fidarsi del valore `m` nell'intestazione
        dell'input. Leggiamo informazioni sugli archi fino a quando ne
        troviamo, e poi controlliamo che il numero di archi letti (i)
        sia uguale a quello dichiarato (m) */
-    i = 0;
-    j = 0;
-    for ( i = 0; i < n; i++)
-    {
-        for ( j = 0; j < m; j++)
-        {
-            graph_add_edge(g, src, dst, weight);
-            printf("src = %d, dst = %d, weight = %f\n", src, dst, weight);
-        }
-    }
+    
     if (i != m) {
         fprintf(stderr, "WARNING 1: ho letto %d archi, ma l'intestazione ne dichiara %d\n", i, m);
-    }/*
-    i=0;
-    while (4 == fscanf(f, "%d %d %lf", &src, &dst, &weight)) {
-        graph_add_edge(g, src, dst, weight);
-        printf("src = %d, dst = %d, weight = %f\n", src, dst, weight);
-        i++;
     }
-    if (i != m) {
-        fprintf(stderr, "WARNING: ho letto %d archi, ma l'intestazione ne dichiara %d\n", i, m);
-    }*/
-    /*
-    fprintf(stderr, "INFO: Letto grafo %s con %d nodi e %d archi\n",
-            (t == GRAPH_UNDIRECTED) ? "non orientato" : "orientato",
-            n,
-            m);
-    */
     return g;
 }
 

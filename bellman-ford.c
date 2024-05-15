@@ -434,12 +434,8 @@ int main( int argc, char *argv[] )
 
     if (argc > 3)
         dst = atoi(argv[3]);*/
-
-    G = graph_read_from_file(filein);/*crea il grafo dal file*/
-    n = graph_n_nodes(G);/*restituisce le righe della matrice*/
-    assert((src >= 0) && (src < n));
-    assert((dst < 0) || ( (dst >= 0) && (dst < n) ));
-
+    G = graph_read_from_file(filein);/*creo la matrice dal file*/
+    
     d = (double*)malloc(n * sizeof(*d)); assert(d != NULL);
     p = (int*)malloc(n * sizeof(*p)); assert(p != NULL);
     sp = (const Edge**)malloc(n * sizeof(*sp)); assert(sp != NULL);

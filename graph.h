@@ -32,8 +32,8 @@ typedef struct Edge {
     struct Edge *next;
 } Edge;
 
-typedef enum { GRAPH_UNDIRECTED, GRAPH_DIRECTED } Graph_type;
-
+#define ROWS 500
+#define COLS 500
 /* struttura grafo */
 typedef struct {
     int n;              /* numero di nodi               */
@@ -42,6 +42,11 @@ typedef struct {
     int *in_deg;        /* grado entrante dei nodi      */
     int *out_deg;       /* grado uscente dei nodi       */
 } Graph;
+typedef struct {
+    int n;              
+    int m;              
+    int mat[ROWS][COLS]
+} Matrix;
 
 /* Crea un nuovo grafo con `n` nodi. Il numero di nodi deve essere
    strettamente positivo. Il tipo di grafo (orientato oppure non
@@ -76,7 +81,7 @@ void graph_del_edge(Graph *g, int src, int dst);
 Edge *graph_adj(const Graph *g, int v);
 
 /* Restituisce il numero di nodi del grafo */
-int graph_n_nodes(const Graph *g);
+int graph_n_nodes(const Matrix *mat);
 
 /* Restituisce il numero di archi del grafo */
 int graph_n_edges(const Graph *g);
@@ -98,5 +103,6 @@ Graph *graph_read_from_file(FILE *f);
    funzione `graph_read_from_file()`. Il file `f` deve essere già
    stato aperto in scrittura. */
 void graph_write_to_file(FILE *f, const Graph *g);
+
 
 #endif
