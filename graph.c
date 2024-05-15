@@ -20,9 +20,6 @@
  ****************************************************************************/
 
 /***
-% LabASD - Implementazione del tipo "Grafo"
-% Moreno Marzolla <moreno.marzolla@unibo.it>
-% Ultimo aggiornamento: 2024-04-16
 
 ![Il problema dei [sette ponti di Königsberg](https://en.wikipedia.org/wiki/Seven_Bridges_of_K%C3%B6nigsberg) risolto da [Leonhard Euler](https://en.wikipedia.org/wiki/Leonhard_Euler) nel 1736 ha segnato la nascita della teoria dei grafi](konigsberg.jpg "Il problema dei sette ponti di Königsberg")
 
