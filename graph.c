@@ -334,7 +334,7 @@ void graph_print(const Graph *g)
 
 Graph *graph_read_from_file(FILE *f)
 {
-    int n, m, t;
+    int n, m;
     int src, dst;
     int i; /* numero archi letti dal file */
     int weight;
@@ -352,7 +352,6 @@ Graph *graph_read_from_file(FILE *f)
     printf("m = %d\n", m);
     assert( n > 0 );
     assert( m >= 0 );
-    assert( (t == GRAPH_UNDIRECTED) || (t == GRAPH_DIRECTED) );
 
     g = graph_create(n);
     /* Ciclo di lettura degli archi. Per rendere il programma più
