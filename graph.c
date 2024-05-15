@@ -371,7 +371,7 @@ Graph *graph_read_from_file(FILE *f)
     }
     if (i != m) {
         fprintf(stderr, "WARNING 1: ho letto %d archi, ma l'intestazione ne dichiara %d\n", i, m);
-    }
+    }/*
     i=0;
     while (4 == fscanf(f, "%d %d %lf", &src, &dst, &weight)) {
         graph_add_edge(g, src, dst, weight);
@@ -380,7 +380,7 @@ Graph *graph_read_from_file(FILE *f)
     }
     if (i != m) {
         fprintf(stderr, "WARNING: ho letto %d archi, ma l'intestazione ne dichiara %d\n", i, m);
-    }
+    }*/
     /*
     fprintf(stderr, "INFO: Letto grafo %s con %d nodi e %d archi\n",
             (t == GRAPH_UNDIRECTED) ? "non orientato" : "orientato",
