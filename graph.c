@@ -336,7 +336,7 @@ Graph *graph_read_from_file(FILE *f)
 {
     int n, m;
     int src, dst;
-    int i; /* numero archi letti dal file */
+    int i,j; /* numero archi letti dal file */
     int weight;
     Graph *g;
     const int Ccell;
@@ -360,7 +360,20 @@ Graph *graph_read_from_file(FILE *f)
        troviamo, e poi controlliamo che il numero di archi letti (i)
        sia uguale a quello dichiarato (m) */
     i = 0;
-    while (3 == fscanf(f, "%d %d %lf", &src, &dst, &weight)) {
+    j = 0;
+    for ( i = 0; i < n; i++)
+    {
+        for ( j = 0; j < m; j++)
+        {
+            graph_add_edge(g, src, dst, weight);
+            printf("src = %d, dst = %d, weight = %f\n", src, dst, weight);
+        }
+    }
+    if (i != m) {
+        fprintf(stderr, "WARNING 1: ho letto %d archi, ma l'intestazione ne dichiara %d\n", i, m);
+    }
+    i=0;
+    while (4 == fscanf(f, "%d %d %lf", &src, &dst, &weight)) {
         graph_add_edge(g, src, dst, weight);
         printf("src = %d, dst = %d, weight = %f\n", src, dst, weight);
         i++;
