@@ -362,6 +362,7 @@ Graph *graph_read_from_file(FILE *f)
     i = 0;
     while (3 == fscanf(f, "%d %d %lf", &src, &dst, &weight)) {
         graph_add_edge(g, src, dst, weight);
+        printf("src = %d, dst = %d, weight = %f\n", src, dst, weight);
         i++;
     }
     if (i != m) {
