@@ -396,7 +396,6 @@ void graph_write_to_file( FILE *f, const Graph* g )
 
     n = graph_n_nodes(g);
     m = graph_n_edges(g);
-    t = graph_type(g);
 
     fprintf(f, "%d %d %d\n", n, m, t);
     for (v=0; v<n; v++) {
