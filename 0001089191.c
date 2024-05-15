@@ -15,37 +15,41 @@ typedef struct {
     int *in_deg;        /* grado entrante dei nodi      */
     int *out_deg;       /* grado uscente dei nodi       */
 } Graph;
-void print_matrix(Graph *g) {
-    int i, j;
-    assert(g != NULL);
 
-    printf("Matrice letta dal file:\n");
-    for (i = 0; i < g->n; i++) {
-        for (j = 0; j < g->n; j++) {
-            printf("%d ",(int) g->edges[i][j].weight);
+#define ROWS 500
+#define COLS 500
+typedef struct {
+    int n;              
+    int m;              
+    int mat[ROWS][COLS];
+} Matrix;
+
+void print_matrix(Matrix* mat) {
+    int i, j;
+    for (i = 0; i < mat->n; i++) {
+        for (j = 0; j < mat->m; j++) {
+            printf("%d ", mat->mat[i][j]);
         }
         printf("\n");
     }
 }
 
-void read_matrix_from_file(FILE *f, Graph *g) {
+Matrix* read_matrix_from_file(FILE *f, int n, int m) {
+    Matrix *matrix;
     int i, j;
-    assert(f != NULL && g != NULL);
-
-    /* Allocazione della matrice */
-    g->edges = (Edge **)malloc(g->n * sizeof(Edge *));
-    for (i = 0; i < g->n; i++) {
-        g->edges[i] = (Edge *)malloc(g->n * sizeof(Edge));
-        for (j = 0; j < g->n; j++) {
-            if (fscanf(f, "%lf", &(g->edges[i][j].weight)) != 1) {
-                fprintf(stderr, "Errore durante la lettura della matrice\n");
+    matrix = (Matrix *)malloc(sizeof(Matrix));
+    matrix->n = n;
+    matrix->m = m;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < m; j++) {
+            if (1 != fscanf(f, "%d", &matrix->mat[i][j])) {
+                fprintf(stderr, "ERRORE durante la lettura della matrice\n");
                 abort();
             }
-            g->edges[i][j].src = i;
-            g->edges[i][j].dst = j;
-            g->edges[i][j].next = NULL;
         }
     }
+    return matrix;
+
 }
 
 Graph *graph_read_from_file(FILE *f)
@@ -55,6 +59,8 @@ Graph *graph_read_from_file(FILE *f)
     int Cheight;
     int Ccell;
     Graph *g;
+    Matrix *matrix;
+
     assert(f != NULL);
     if (4 != fscanf(f, "%d \n %d \n %d \n %d \n",&Ccell, &Cheight, &n, &m)) {
         fprintf(stderr, "ERRORE durante la lettura dell'intestazione del grafo\n");
@@ -66,15 +72,17 @@ Graph *graph_read_from_file(FILE *f)
     g->in_deg = (int *)malloc(n * sizeof(int));
     g->out_deg = (int *)malloc(n * sizeof(int));
 
-    /* Leggi la matrice dal file */
-    read_matrix_from_file(f, g);
-    print_matrix(g);
     printf("Ccell = %d\n", Ccell);
     printf("Cheight = %d \n", Cheight);
     printf("n = %d\n", n);
     printf("m = %d\n", m);
     assert( n > 0 );
     assert( m >= 0 );
+    matrix=(Matrix *)malloc(sizeof(Matrix));
+    matrix->n = n;
+    matrix->m = m;  
+    matrix=read_matrix_from_file(f,n,m);
+    print_matrix(matrix);
     return g;
 }
 int main( int argc, char *argv[] )
