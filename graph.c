@@ -248,9 +248,6 @@ void graph_add_edge(Graph *g, int src, int dst, double weight)
     /*assert((dst >= 0) && (dst < graph_n_nodes(g)));*/
 
     status = graph_adj_insert(g, src, dst, weight);
-    if (graph_type(g) == GRAPH_UNDIRECTED) {
-        status |= graph_adj_insert(g, dst, src, weight);
-    }
     if (status == 0)
         g->m++;
     else
@@ -321,12 +318,6 @@ void graph_print(const Graph *g)
 
     assert(g != NULL);
 
-    if (graph_type(g) == GRAPH_UNDIRECTED) {
-        printf("UNDIRECTED\n");
-    } else {
-        printf("DIRECTED\n");
-    }
-
     for (i=0; i<g->n; i++) {
         const Edge *e;
         int out_deg = 0; /* ne approfittiamo per controllare la
@@ -386,34 +377,3 @@ Graph *graph_read_from_file(FILE *f)
     return g;
 }
 
-void graph_write_to_file( FILE *f, const Graph* g )
-{
-    int v;
-    int n, m, t;
-
-    assert(g != NULL);
-    assert(f != NULL);
-
-    n = graph_n_nodes(g);
-    m = graph_n_edges(g);
-
-    fprintf(f, "%d %d %d\n", n, m, t);
-    for (v=0; v<n; v++) {
-        const Edge *e;
-        for (e = graph_adj(g, v); e != NULL; e = e->next) {
-            assert(e->src == v);
-            /* Se il grafo è non orientato, dobbiamo ricordarci che
-               gli archi compaiono due volte nelle liste di
-               adiacenza. Nel file pero' dobbiamo riportare ogni arco
-               una sola volta, dato che sarà la procedura di lettura a
-               creare le liste di adiacenza in modo corretto. Quindi,
-               ogni coppia di archi (u,v), (v,u) deve comparire una
-               sola volta nel file. Per comodità, salviamo nel file la
-               versione di ciascun arco in cui il nodo sorgente è
-               minore del nodo destinazione. */
-            if ((graph_type(g) == GRAPH_DIRECTED) || (e->src < e->dst)) {
-                fprintf(f, "%d %d %f\n", e->src, e->dst, e->weight);
-            }
-        }
-    }
-}
