@@ -148,7 +148,7 @@ dove:
 #include <assert.h>
 #include "graph.h"
 
-Graph *graph_create( int n, Graph_type t )
+Graph *graph_create( int n)
 {
     int i;
     Graph *g = (Graph*)malloc(sizeof(*g));
@@ -157,7 +157,6 @@ Graph *graph_create( int n, Graph_type t )
 
     g->n = n;
     g->m = 0;
-    g->t = t;
     g->edges = (Edge**)malloc(n * sizeof(Edge*));
     assert(g->edges != NULL);
     g->in_deg = (int*)malloc(n * sizeof(*(g->in_deg)));
@@ -192,11 +191,6 @@ void graph_destroy(Graph *g)
     g->n = 0;
     g->edges = NULL;
     free(g);
-}
-
-Graph_type graph_type(const Graph *g)
-{
-    return g->t;
 }
 
 static Edge *new_edge(int src, int dst, double weight, Edge *next)
@@ -285,39 +279,6 @@ static Edge *graph_adj_remove(Edge *adj, int dst, int *deleted)
     }
 }
 
-void graph_del_edge(Graph *g, int src, int dst)
-{
-    int del_srcdst, del_dstsrc;
-
-    assert((src >= 0) && (src < graph_n_nodes(g)));
-    assert((dst >= 0) && (dst < graph_n_nodes(g)));
-
-    /* Rimuovi l'arco src -> dst. */
-    g->edges[src] = graph_adj_remove(g->edges[src], dst, &del_srcdst);
-    if (del_srcdst) {
-        g->out_deg[src]--;
-        g->in_deg[dst]--;
-        g->m--;
-    }
-    if (g->t == GRAPH_UNDIRECTED) {
-        /* Rimuovi l'arco dst -> src. */
-        g->edges[dst] = graph_adj_remove(g->edges[dst], src, &del_dstsrc);
-        /* L'asserzione seguente serve per assicurarsi che l'arco
-           dst->src venga cancellato se e solo se src->dst lo è.
-           Infatti, in un grafo non orientato ogni arco viene
-           rappresentato dalla coppia src->dst e dst->src. Pertanto,
-           se esiste l'arco "di andata" ma non quello "di ritorno" (o
-           viceversa), il grafo non è stato costruito correttamente e
-           il programma deve essere abortito. */
-        assert(del_srcdst == del_dstsrc);
-        if (del_dstsrc) {
-            g->out_deg[dst]--;
-            g->in_deg[src]--;
-            /* Non bisogna decrementare g->m due volte. */
-        }
-    }
-}
-
 int graph_n_nodes(const Graph *g)
 {
     assert(g != NULL);
@@ -402,7 +363,7 @@ Graph *graph_read_from_file(FILE *f)
     assert( m >= 0 );
     assert( (t == GRAPH_UNDIRECTED) || (t == GRAPH_DIRECTED) );
 
-    g = graph_create(n, t);
+    g = graph_create(n);
     /* Ciclo di lettura degli archi. Per rendere il programma più
        robusto, meglio non fidarsi del valore `m` nell'intestazione
        dell'input. Leggiamo informazioni sugli archi fino a quando ne
