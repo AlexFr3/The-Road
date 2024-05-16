@@ -25,6 +25,14 @@ typedef struct {
     int m;              
     int mat[ROWS][COLS];
 } Matrix;
+
+void relax(int src, int dst, double weight, double *d, int *p) {
+    if (d[src] != DBL_MAX && d[src] + weight < d[dst]) {
+        d[dst] = d[src] + weight;
+        p[dst] = src;
+    }
+}
+
 void test_initialize(const Graph *g, int s, double *d, int *p) {
     int i;
     
@@ -63,9 +71,35 @@ void initialize(const Graph *g, int s, double *d, int *p) {
 }
 
 int bellman_ford( const Graph *g, int s, double *d, int *p, const Edge **sp )
-{ 
-  initialize(g,s,d,p);/*s punto di partenza da 0, G è il grafo*/
-  test_initialize(g, s, d, p);
+{   
+    int i, j;
+
+    initialize(g,s,d,p);/*s punto di partenza da 0, G è il grafo*/
+    test_initialize(g, s, d, p);
+    /* Ripeti il rilassamento degli archi per (n - 1) volte, dove n è il numero di nodi nel grafo*/
+    for (i = 0; i < g->n - 1; i++) {
+        /* Per ogni arco nel grafo*/
+        for (j = 0; j < g->m; j++) {
+            int src = g->edges[j]->src;
+            int dst = g->edges[j]->dst;
+            double weight = g->edges[j]->weight;
+            /* Rilassa l'arco utilizzando la funzione relax*/
+            relax(src, dst, weight, d, p);
+        }
+    }
+    /*Verifica se ci sono cicli negativi*/
+    for (j = 0; j < g->m; j++) {
+        int src = g->edges[j]->src;
+        int dst = g->edges[j]->dst;
+        double weight = g->edges[j]->weight;
+        if (d[src] != DBL_MAX && d[src] + weight < d[dst]) {
+            /* È stato trovato un ciclo negativo*/
+            return -1;
+        }
+    }
+
+    return 0; /*Nessun ciclo negativo trovato*/
+
   return 0;
 
 }
