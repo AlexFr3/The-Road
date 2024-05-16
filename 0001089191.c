@@ -25,6 +25,33 @@ typedef struct {
     int m;              
     int mat[ROWS][COLS];
 } Matrix;
+void test_initialize(const Graph *g, int s, double *d, int *p) {
+    int i;
+    
+    /* Verifica della distanza del nodo sorgente*/
+    if (d[s] != 0.0) {
+        printf("ERRORE: La distanza del nodo sorgente non è stata impostata correttamente.\n");
+        return;
+    }
+    
+    /*Verifica delle altre distanze*/
+    for (i = 0; i < g->n; i++) {
+        if (i != s && d[i] != DBL_MAX) {
+            printf("ERRORE: La distanza del nodo %d non è stata impostata correttamente.\n", i);
+            return;
+        }
+    }
+    
+    /* Verifica dei predecessori*/
+    for (i = 0; i < g->n; i++) {
+        if (p[i] != -1) {
+            printf("ERRORE: Il predecessore del nodo %d non è stato impostato correttamente.\n", i);
+            return;
+        }
+    }
+    
+    printf("Tutti i test hanno superato con successo. La funzione initialize funziona correttamente.\n");
+}
 
 void initialize(const Graph *g, int s, double *d, int *p) {
     int i;
@@ -38,7 +65,9 @@ void initialize(const Graph *g, int s, double *d, int *p) {
 int bellman_ford( const Graph *g, int s, double *d, int *p, const Edge **sp )
 { 
   initialize(g,s,d,p);/*s punto di partenza da 0, G è il grafo*/
+  test_initialize(g, s, d, p);
   return 0;
+
 }
 void graph_destroy(Graph *g)
 {
