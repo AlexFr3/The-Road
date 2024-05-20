@@ -5,9 +5,12 @@
 #include <float.h>
 #include <math.h>
 
+#define ROWS 500
+#define COLS 500
+
 typedef struct Edge {
-    int src;            /* nodo sorgente */
-    int dst;            /* nodo destinazione */
+    int src[ROWS][COLS];            /* Coordinate del nodo sorgente */
+    int dst[ROWS][COLS];            /* Coordinate del nodo destinazione */
     double weight;      /* peso dell'arco */
     struct Edge *next;
 } Edge;
@@ -16,17 +19,13 @@ typedef struct {
     int n;
     int m;
     Edge **edges;       /* array di liste di adiacenza */
-    int *in_deg;        /* grado entrante dei nodi */
-    int *out_deg;       /* grado uscente dei nodi */
 } Graph;
 
-#define ROWS 500
-#define COLS 500
 typedef struct {
     int n;
     int m;
     int mat[ROWS][COLS];
-    int visited[ROWS][COLS]; /*0 se non visitato, 1 se visitato*/
+    int visited[ROWS][COLS]; /* 0 se non visitato, 1 se visitato */
 } Matrix;
 
 void print_path(int *p, const Graph *g) {
@@ -102,7 +101,7 @@ int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
             Edge *edge = g->edges[u];
             while (edge != NULL) {
                 relax(edge->src, edge->dst, edge->weight, d, p);
-                visited[edge->src] = 1; /* Imposta il nodo come visitato */
+                visited[edge->src[0][0]] = 1; /* Imposta il nodo come visitato */
                 edge = edge->next;
             }
         }
@@ -111,7 +110,7 @@ int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
     for (u = 0; u < g->n; u++) {
         Edge *edge = g->edges[u];
         while (edge != NULL) {
-            if (d[edge->src] != HUGE_VAL && d[edge->src] + edge->weight < d[edge->dst]) {
+            if (d[edge->src[0][0]] != HUGE_VAL && d[edge->src[0][0]] + edge->weight < d[edge->dst[0][0]]) {
                 printf("Il grafo contiene un ciclo di peso negativo.\n");
                 free(visited);
                 return 1;
@@ -138,8 +137,6 @@ void graph_destroy(Graph *g) {
         g->edges[i] = NULL;
     }
     free(g->edges);
-    free(g->in_deg);
-    free(g->out_deg);
     g->n = 0;
     g->edges = NULL;
     free(g);
@@ -155,13 +152,8 @@ Graph *graph_create(int n, int m) {
     g->m = m;
     g->edges = (Edge **)malloc(n * sizeof(Edge *));
     assert(g->edges != NULL);
-    g->in_deg = (int *)malloc(n * sizeof(*(g->in_deg)));
-    assert(g->in_deg != NULL);
-    g->out_deg = (int *)malloc(n * sizeof(*(g->out_deg)));
-    assert(g->out_deg != NULL);
     for (i = 0; i < n; i++) {
         g->edges[i] = NULL;
-        g->in_deg[i] = g->out_deg[i] = 0;
     }
     return g;
 }
@@ -195,12 +187,11 @@ Matrix *read_matrix_from_file(FILE *f, int n, int m) {
 
 Graph *graph_read_from_file(FILE *f) {
     int n, m, i, j;
-    int Ccell, Cheight;
     Graph *g;
     Matrix *matrix;
-
+    Edge *edge = (Edge *)malloc(sizeof(Edge));
     assert(f != NULL);
-    if (4 != fscanf(f, "%d \n %d \n %d \n %d \n", &Ccell, &Cheight, &n, &m)) {
+    if (4 != fscanf(f, "%d %d %d %d", &n, &m, &n, &m)) {
         fprintf(stderr, "ERRORE durante la lettura dell'intestazione del grafo\n");
         abort();
     }
@@ -211,19 +202,13 @@ Graph *graph_read_from_file(FILE *f) {
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
-            if (matrix->mat[i][j] != 0) {
-                Edge *edge = (Edge *)malloc(sizeof(Edge));
-                edge->src = i;
-                edge->dst = j;
-                edge->weight = matrix->mat[i][j];
-                edge->next = g->edges[i];
-                g->edges[i] = edge;
-                g->out_deg[i]++;
-                g->in_deg[j]++;
-            }
+            edge->src[0][0] = i;
+            edge->dst[0][0] = j;
+            edge->weight = matrix->mat[i][j];
+            edge->next = g->edges[i];
+            g->edges[i] = edge;
         }
     }
-
     free(matrix);
     return g;
 }
