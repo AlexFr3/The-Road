@@ -27,7 +27,28 @@ typedef struct {
     int mat[ROWS][COLS];
     int visited[ROWS][COLS]; /* 0 se non visitato, 1 se visitato */
 } Matrix;
+int Cheight;
+int Ccell;
+void matrix_into_graph(Matrix* mat, Graph* g) {
+    int i;
+    int j;
+    int k;
 
+    assert(g != NULL);
+    assert(mat != NULL);
+
+    i = 0;
+    j = 0;
+    k = 0;
+
+    for (i = 0; i < mat->n; i++) {
+        for (j = 0; j < mat->m; j++) {
+            lateral_control(g, mat, i, j, k, Ccell);
+            under_control(g, mat, i, j, k, Ccell);
+            k++;
+        }
+    }
+}
 void print_path(int *p, const Graph *g) {
     int i;
     for (i = 0; i < g->n; ++i) {
