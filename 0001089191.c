@@ -13,8 +13,8 @@ typedef struct Edge {
 } Edge;
 
 typedef struct {
-    int n;              /* numero di nodi */
-    int m;              /* numero di archi */
+    int n;
+    int m;
     Edge **edges;       /* array di liste di adiacenza */
     int *in_deg;        /* grado entrante dei nodi */
     int *out_deg;       /* grado uscente dei nodi */
@@ -26,6 +26,7 @@ typedef struct {
     int n;
     int m;
     int mat[ROWS][COLS];
+    int visited[ROWS][COLS]; /*0 se non visitato, 1 se visitato*/
 } Matrix;
 
 void print_path(int *p, const Graph *g) {
@@ -39,21 +40,19 @@ void relax(int src, int dst, double weight, double *d, int *p) {
     if (d[src] != HUGE_VAL && d[src] + weight < d[dst]) {
         d[dst] = d[src] + weight;
         p[dst] = src;
-        /*new_effort=edge->src->effort+(edge->weight*Cheight)+Ccell;*/
         printf("Relax: aggiornato predecessore di %d a %d\n", dst, src);
+        /*new_effort=edge->src->effort+(edge->weight*Cheight)+Ccell;*/
     }
 }
 
 void test_initialize(const Graph *g, int s, double *d, int *p) {
     int i;
 
-    /* Verifica della distanza del nodo sorgente */
     if (d[s] != 0.0) {
         printf("ERRORE: La distanza del nodo sorgente non è stata impostata correttamente.\n");
         return;
     }
 
-    /* Verifica delle altre distanze */
     for (i = 0; i < g->n; i++) {
         if (i != s && d[i] != HUGE_VAL) {
             printf("ERRORE: La distanza del nodo %d non è stata impostata correttamente.\n", i);
@@ -61,7 +60,6 @@ void test_initialize(const Graph *g, int s, double *d, int *p) {
         }
     }
 
-    /* Verifica dei predecessori */
     for (i = 0; i < g->n; i++) {
         if (p[i] != -1) {
             printf("ERRORE: Il predecessore del nodo %d non è stato impostato correttamente.\n", i);
@@ -75,12 +73,11 @@ void test_initialize(const Graph *g, int s, double *d, int *p) {
 void initialize(const Graph *g, int s, double *d, int *p) {
     int i;
     for (i = 0; i < g->n; i++) {
-        d[i] = HUGE_VAL; /* Imposto tutte le distanze a "infinito teorico" (valore massimo per gli interi) */
-        p[i] = -1;       /* Imposto tutti predecessori non definiti ovvero -1 */
+        d[i] = HUGE_VAL;
+        p[i] = -1;
     }
-    d[s] = 0; /* Imposto la distanza del nodo sorgente a 0 */
+    d[s] = 0;
 
-    /* Debug: stampa i valori inizializzati */
     printf("Initial distances and predecessors:\n");
     for (i = 0; i < g->n; i++) {
         printf("Nodo %d: distanza = %f, predecessore = %d\n", i, d[i], p[i]);
@@ -89,14 +86,23 @@ void initialize(const Graph *g, int s, double *d, int *p) {
 
 int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
     int u, i;
+    int *visited = (int *)malloc(g->n * sizeof(int));
+
+    for (i = 0; i < g->n; i++) {
+        visited[i] = 0;  /* Inizializzo tutti i nodi come non visitati */
+    }
+
     initialize(g, src, d, p);
     test_initialize(g, src, d, p);
 
-    for (i = 0; i < g->n - 1; i++) {
+    for (i = 0; i < (g->n * g->m); i++) {
         for (u = 0; u < g->n; u++) {
+            if (visited[u]) continue; /* Salta i nodi già visitati */
+
             Edge *edge = g->edges[u];
             while (edge != NULL) {
                 relax(edge->src, edge->dst, edge->weight, d, p);
+                visited[edge->src] = 1; /* Imposta il nodo come visitato */
                 edge = edge->next;
             }
         }
@@ -107,12 +113,14 @@ int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
         while (edge != NULL) {
             if (d[edge->src] != HUGE_VAL && d[edge->src] + edge->weight < d[edge->dst]) {
                 printf("Il grafo contiene un ciclo di peso negativo.\n");
+                free(visited);
                 return 1;
             }
             edge = edge->next;
         }
     }
 
+    free(visited);
     return 0;
 }
 
@@ -127,7 +135,7 @@ void graph_destroy(Graph *g) {
             free(edge);
             edge = next;
         }
-        g->edges[i] = NULL; /* è superfluo */
+        g->edges[i] = NULL;
     }
     free(g->edges);
     free(g->in_deg);
@@ -223,9 +231,9 @@ Graph *graph_read_from_file(FILE *f) {
 int main(int argc, char *argv[]) {
     Graph *G;
     FILE *filein = stdin;
-    const Edge **sp; /* sp[v] è il puntatore all'arco nel grafo che collega v con il suo predecessore nell'albero dei cammini minimi */
-    double *d;       /* d[v] è la distanza del nodo v dalla sorgente */
-    int *p;          /* p[v] è il predecessore di v lungo il cammino minimo dalla sorgente a v */
+    const Edge **sp;
+    double *d;
+    int *p;
     int neg, src = 0;
 
     if (argc < 2 || argc > 4) {
@@ -241,7 +249,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    G = graph_read_from_file(filein); /* creo la matrice dal file */
+    G = graph_read_from_file(filein);
     d = (double *)malloc(G->n * sizeof(*d));
     assert(d != NULL);
     p = (int *)malloc(G->n * sizeof(*p));
