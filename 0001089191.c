@@ -9,8 +9,8 @@
 #define COLS 500
 
 typedef struct Edge {
-    int src[ROWS][COLS];            /* Coordinate del nodo sorgente */
-    int dst[ROWS][COLS];            /* Coordinate del nodo destinazione */
+    int src;           
+    int dst;            
     double weight;      /* peso dell'arco */
     struct Edge *next;
 } Edge;
@@ -101,7 +101,7 @@ int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
             Edge *edge = g->edges[u];
             while (edge != NULL) {
                 relax(edge->src, edge->dst, edge->weight, d, p);
-                visited[edge->src[0][0]] = 1; /* Imposta il nodo come visitato */
+                visited[edge->src] = 1; /* Imposta il nodo come visitato */
                 edge = edge->next;
             }
         }
@@ -110,7 +110,7 @@ int bellman_ford(const Graph *g, int src, double *d, int *p, const Edge **sp) {
     for (u = 0; u < g->n; u++) {
         Edge *edge = g->edges[u];
         while (edge != NULL) {
-            if (d[edge->src[0][0]] != HUGE_VAL && d[edge->src[0][0]] + edge->weight < d[edge->dst[0][0]]) {
+            if (d[edge->src] != HUGE_VAL && d[edge->src] + edge->weight < d[edge->dst]) {
                 printf("Il grafo contiene un ciclo di peso negativo.\n");
                 free(visited);
                 return 1;
@@ -142,14 +142,14 @@ void graph_destroy(Graph *g) {
     free(g);
 }
 
-Graph *graph_create(int n, int m) {
+Graph *graph_create(int n) {
     int i;
     Graph *g = (Graph *)malloc(sizeof(*g));
     assert(g != NULL);
     assert(n > 0);
 
     g->n = n;
-    g->m = m;
+    g->m = 0;
     g->edges = (Edge **)malloc(n * sizeof(Edge *));
     assert(g->edges != NULL);
     for (i = 0; i < n; i++) {
@@ -196,14 +196,14 @@ Graph *graph_read_from_file(FILE *f) {
         abort();
     }
 
-    g = graph_create(n, m);
+    g = graph_create(n);
     matrix = read_matrix_from_file(f, n, m);
     print_matrix(matrix);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
-            edge->src[0][0] = i;
-            edge->dst[0][0] = j;
+            edge->src= i;
+            edge->dst= j;
             edge->weight = matrix->mat[i][j];
             edge->next = g->edges[i];
             g->edges[i] = edge;
