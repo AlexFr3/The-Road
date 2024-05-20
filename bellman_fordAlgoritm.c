@@ -82,8 +82,8 @@ void BellmanFord(struct Graph *graph, int src)
     for (int i = 0; i <= V - 1; i++)
         for (int j = 0; j < E; j++)
         {
-            int u = graph->edges[j].src;
-            int v = graph->edges[j].dst;
+            int u = graph->edges[j].src;/*sorgente*/
+            int v = graph->edges[j].dst;/*destinazione*/
             int w = graph->edges[j].weight;
 
             if (dist[u] != INT_MAX && dist[u] + w < dist[v])
