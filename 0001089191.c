@@ -30,7 +30,8 @@ typedef struct {
 
 int Cheight;
 int Ccell;
- Edge* new_edge(int src, int dst, double weight, Edge* next)
+ 
+Edge* new_edge(int src, int dst, double weight, Edge* next)
 {
     Edge* edge = (Edge*)malloc(sizeof(Edge));
     assert(edge != NULL);
@@ -47,8 +48,6 @@ int Ccell;
 void graph_adj_insert(Graph* g, int src, int dst, double weight)
 {
     g->edges[src] = new_edge(src, dst, weight, g->edges[src]);
-    g->in_deg[dst]++;
-    g->out_deg[src]++;
 }
 
 
@@ -59,7 +58,7 @@ colonne della matirce. Nel caso affermativo, controllo se la cella in cui siamo 
 a quella affianco, ovvero se Ë 0, e poi aggiungo un arco da entrambe le direzioni non essendo un grafo
 orientato quello che stiamo costruendo. L'arco ha sempre peso 1.*/
 void lateral_control(Graph* g, Matrix* mat, int i, int j, int k, const int weight) {
-    if (j + 1 < mat->m && mat->matrix[i][j] == 0 && mat->matrix[i][j + 1] == 0) {
+    if (j + 1 < mat->m && mat->mat[i][j] == 0 && mat->mat[i][j + 1] == 0) {
         graph_adj_insert(g, k, k + 1, weight);
         graph_adj_insert(g, k + 1, k, weight);
         g->m++;
@@ -74,7 +73,7 @@ Nel caso affermativo, controllo se la cella in cui siamo per il controllo sia ug
 e poi aggiungo un arco da entrambe le direzioni non essendo un grafo orientato quello che stiamo costruendo.
 L'arco ha sempre peso 1.*/
 void under_control(Graph* g, Matrix* mat, int i, int j, int k, const int weight) {
-    if (i + 1 < mat->n && mat->matrix[i][j] == 0 && mat->matrix[i + 1][j] == 0) {
+    if (i + 1 < mat->n && mat->mat[i][j] == 0 && mat->mat[i + 1][j] == 0) {
         graph_adj_insert(g, k, k + mat->m, weight);
         graph_adj_insert(g, k + mat->m, k, weight);
         g->m++;
