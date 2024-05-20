@@ -27,8 +27,60 @@ typedef struct {
     int mat[ROWS][COLS];
     int visited[ROWS][COLS]; /* 0 se non visitato, 1 se visitato */
 } Matrix;
+
 int Cheight;
 int Ccell;
+ Edge* new_edge(int src, int dst, double weight, Edge* next)
+{
+    Edge* edge = (Edge*)malloc(sizeof(Edge));
+    assert(edge != NULL);
+
+    edge->src = src;
+    edge->dst = dst;
+    edge->weight = weight;
+    edge->next = next;
+    return edge;
+}
+
+
+/*Inserisce l'arco (src, dst, weight) nel grafo.*/
+void graph_adj_insert(Graph* g, int src, int dst, double weight)
+{
+    g->edges[src] = new_edge(src, dst, weight, g->edges[src]);
+    g->in_deg[dst]++;
+    g->out_deg[src]++;
+}
+
+
+/*Esegue il controllo per poter aggiungere un arco tra il nodo corrente 'k' e quello affianco a destra
+'k + 1' del grafo (controllando le corrispondenti posizioni della matrice). Mi assicuro che il controllo
+vi sia solo se effettivamente affianco vi Ë un'altra colonna di matrice (ovvero se j+1 sia minore delle
+colonne della matirce. Nel caso affermativo, controllo se la cella in cui siamo per il controllo sia uguale
+a quella affianco, ovvero se Ë 0, e poi aggiungo un arco da entrambe le direzioni non essendo un grafo
+orientato quello che stiamo costruendo. L'arco ha sempre peso 1.*/
+void lateral_control(Graph* g, Matrix* mat, int i, int j, int k, const int weight) {
+    if (j + 1 < mat->m && mat->matrix[i][j] == 0 && mat->matrix[i][j + 1] == 0) {
+        graph_adj_insert(g, k, k + 1, weight);
+        graph_adj_insert(g, k + 1, k, weight);
+        g->m++;
+    }
+}
+
+
+/*Esegue il controllo per poter aggiungere un arco tra il nodo corrente 'k' e quello sottostante 'k + nrighe' del
+grafo (controllando le corrispondenti posizioni della matrice). Mi assicuro che il controllo vi sia solo se
+effettivamente sotto vi Ë un'altra riga di matrice (ovvero se i+1 sia minore delle righe della matirce.
+Nel caso affermativo, controllo se la cella in cui siamo per il controllo sia uguale a quella sotto, ovvero se Ë 0,
+e poi aggiungo un arco da entrambe le direzioni non essendo un grafo orientato quello che stiamo costruendo.
+L'arco ha sempre peso 1.*/
+void under_control(Graph* g, Matrix* mat, int i, int j, int k, const int weight) {
+    if (i + 1 < mat->n && mat->matrix[i][j] == 0 && mat->matrix[i + 1][j] == 0) {
+        graph_adj_insert(g, k, k + mat->m, weight);
+        graph_adj_insert(g, k + mat->m, k, weight);
+        g->m++;
+    }
+}
+
 void matrix_into_graph(Matrix* mat, Graph* g) {
     int i;
     int j;
