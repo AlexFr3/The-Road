@@ -196,11 +196,11 @@ Graph *graph_read_from_file(FILE *f) {
         abort();
     }
 
-    g = graph_create(n);
+    g = graph_create(n*n);
     matrix = read_matrix_from_file(f, n, m);
     print_matrix(matrix);
 
-    for (i = 0; i <n; i++) {
+    for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
             edge->src= i;
             edge->dst= j;
