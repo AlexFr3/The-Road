@@ -1,87 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-
+#include <string.h>
 int sum = 0;
 int Ccell, Cheight;
 
 int calc_weight(int **matrice, int **path, int righe, int colonne) {
-    int i, j, k, sum_diff_heights_squared, prev_height, curr_height, weight;
+   int weight = 0;
+    int sum_diff_heights_squared = 0;
+    int k = 0;
+    int curr_height, prev_height;
+    int i = righe - 1, j = colonne - 1;
 
-    /* Inizializzazione delle variabili */
-    i = righe - 1;
-    j = colonne - 1;
-    k = 0; /* Numero di celle nel percorso */
-    sum_diff_heights_squared = 0;
-
-    /* Calcolo del numero delle celle (k) e della sommatoria delle differenze delle altezze */
-    while (i != 0 || j != 0) {
-        k++;
+    while (i > 0 || j > 0) {
         curr_height = matrice[i][j];
-
-        /* Determina la prossima altezza basata sul percorso */
-        if (path[i][j] == 1) {
-            prev_height = matrice[i-1][j];
-        } else if (path[i][j] == 2) {
-            prev_height = matrice[i][j-1];
+        if (k > 0) {
+            sum_diff_heights_squared += (curr_height - prev_height) * (curr_height - prev_height);
         }
-
-        /* Aggiungi la differenza delle altezze al quadrato */
-        sum_diff_heights_squared += (curr_height - prev_height) * (curr_height - prev_height);
-
-        /* Muoviti alla prossima cella nel percorso */
-        if (path[i][j] == 1) {
+        prev_height = curr_height;
+        k++;
+        if (path[i][j] == 1 || path[i][j] == 3) {
             i--;
-        } else if (path[i][j] == 2) {
+        } else if (path[i][j] == 2 || path[i][j] == 4) {
             j--;
         }
     }
 
-    /* Aggiungi la cella di partenza */
+    curr_height = matrice[0][0];
+    if (k > 0) {
+        sum_diff_heights_squared += (curr_height - prev_height) * (curr_height - prev_height);
+    }
     k++;
-    
-    /* Calcola il peso totale usando la formula */
+
     weight = Ccell * k + Cheight * sum_diff_heights_squared;
-    printf("Ccell: %d, Cheight: %d, sum_diff: %d\n", Ccell, Cheight, sum_diff_heights_squared);
     return weight;
 }
 
 int calc_num_cells(int **path, int righe, int colonne) {
     int count = 0;
     int i = righe - 1, j = colonne - 1;
-
-    while (i != 0 || j != 0) {
+    while (i > 0 || j > 0) {
         count++;
-        if (path[i][j] == 1) {
+        if (path[i][j] == 1 || path[i][j] == 3) {
             i--;
-        } else if (path[i][j] == 2) {
+        } else if (path[i][j] == 2 || path[i][j] == 4) {
             j--;
         }
     }
-    count++; /* Conta la cella di partenza (0,0)*/
-    return count;
+    return count + 1; 
 }
 
 void stampaPercorso(int **path, int i, int j) {
     if (i == 0 && j == 0) {
-        printf("(%d, %d) ", i, j);
+        printf("(%d, %d)\n", i, j);
         return;
     }
-    if (path[i][j] == 1) {
-        stampaPercorso(path, i-1, j);
-    } else if (path[i][j] == 2) {
-        stampaPercorso(path, i, j-1);
+    if (path[i][j] == 1 || path[i][j] == 3) {
+        stampaPercorso(path, i - 1, j);
+    } else if (path[i][j] == 2 || path[i][j] == 4) {
+        stampaPercorso(path, i, j - 1);
     }
-    printf("(%d, %d) ", i, j);
+    printf("(%d, %d)\n", i, j);
+}
+/*0 se non esiste*/
+int pathRightExists(int **path, int righe, int colonne, int i, int j) {
+    return (j < colonne - 1) && (path[i][j + 1] != 0);
+}
+
+int pathLeftExists(int **path, int righe, int colonne, int i, int j) {
+    return (j > 0) && (path[i][j - 1] != 0);
+}
+
+int pathDownExists(int **path, int righe, int colonne, int i, int j) {
+    return (i < righe - 1) && (path[i + 1][j] != 0);
 }
 
 void trovaCammino(int **matrice, int righe, int colonne) {
-    int i, j;
+    int i, j, nCell, weight;
     int **dist = (int **)malloc(righe * sizeof(int *));
     int **path = (int **)malloc(righe * sizeof(int *));
-    int nCell;
-    int weight;
-
     for (i = 0; i < righe; i++) {
         dist[i] = (int *)malloc(colonne * sizeof(int));
         path[i] = (int *)malloc(colonne * sizeof(int));
@@ -95,27 +92,30 @@ void trovaCammino(int **matrice, int righe, int colonne) {
 
     for (i = 0; i < righe; i++) {
         for (j = 0; j < colonne; j++) {
-            if (i > 0 && dist[i][j] > dist[i-1][j] + matrice[i][j]) {
-                dist[i][j] = dist[i-1][j] + matrice[i][j];
-                path[i][j] = 1; /* 1 significa che proviene dall'alto*/
+
+            if (i > 0 && dist[i][j] > dist[i - 1][j] + matrice[i][j] && path[i][j] == 0) {
+                dist[i][j] = dist[i - 1][j] + matrice[i][j];
+                path[i][j] = 1; /* Viene dall'alto */
+            }else if (j > 0 && dist[i][j] > dist[i][j - 1] + matrice[i][j] && path[i][j] == 0) {
+                dist[i][j] = dist[i][j - 1] + matrice[i][j];
+                path[i][j] = 2; /* Viene da sinistra */
+            }else if (i < righe - 1 && dist[i][j] > dist[i + 1][j] + matrice[i][j] && path[i][j] == 0) {
+                dist[i][j] = dist[i + 1][j] + matrice[i][j];
+                path[i][j] = 3; /* Scendere */
+            }else if (j < colonne - 1 && dist[i][j] > dist[i][j + 1] + matrice[i][j] && path[i][j] == 0) {
+                dist[i][j] = dist[i][j + 1] + matrice[i][j];
+                path[i][j] = 4; /* Andare a destra */
             }
-            if (j > 0 && dist[i][j] > dist[i][j-1] + matrice[i][j]) {
-                dist[i][j] = dist[i][j-1] + matrice[i][j];
-                path[i][j] = 2; /* 2 significa che proviene da sinistra*/
-            }
+                        printf("Percorso parziale [%d][%d] = %d\n", i, j, path[i][j]);
         }
     }
 
-    printf("Il percorso minimo dal primo all'ultimo posto è:\n");
-    stampaPercorso(path, righe-1, colonne-1);
-    printf("\n");
-
+    printf("Il percorso minimo dal primo all'ultimo posto e':\n");
+    stampaPercorso(path, righe - 1, colonne - 1);
     nCell = calc_num_cells(path, righe, colonne);
-    printf("Il numero delle celle del percorso è: %d\n", nCell);
-
+    printf("Il numero delle celle del percorso e': %d\n", nCell);
     weight = calc_weight(matrice, path, righe, colonne);
-    printf("Il peso totale del percorso è: %d\n", weight);
-    
+    printf("Il peso totale del percorso e': %d\n", weight);
 
     for (i = 0; i < righe; i++) {
         free(dist[i]);
@@ -126,22 +126,24 @@ void trovaCammino(int **matrice, int righe, int colonne) {
 }
 
 int main(int argc, char *argv[]) {
+
     int righe, colonne;
     int **matrice;
     int i, j;
     FILE *filein = stdin;
 
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s filename\n", argv[0]);
+    if (argc < 2 || argc > 4) {
+        fprintf(stderr, "Usage: %s filename [src [dst]]\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    filein = fopen(argv[1], "r");
-    if (filein == NULL) {
-        fprintf(stderr, "Cannot open %s\n", argv[1]);
-        return EXIT_FAILURE;
+    if (strcmp(argv[1], "-") != 0) {
+        filein = fopen(argv[1], "r");
+        if (filein == NULL) {
+            fprintf(stderr, "Cannot open %s\n", argv[1]);
+            return EXIT_FAILURE;
+        }
     }
-
     fscanf(filein, "%d", &Ccell);
     fscanf(filein, "%d", &Cheight);
     fscanf(filein, "%d", &righe);
@@ -166,3 +168,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
