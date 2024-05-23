@@ -6,22 +6,30 @@ int sum = 0;
 int Ccell, Cheight;
 
 int calc_weight(int **matrice, int **path, int righe, int colonne) {
-    int i = righe - 1, j = colonne - 1;
-    int k = 0; /* Numero di celle nel percorso*/
-    int sum_diff_heights_squared = 0;
-    int weight;
-    int current_height, first_height, first_next_height, next_height;
+    int i, j, k, sum_diff_heights_squared, prev_height, curr_height, weight;
 
-    /* Calcola il percorso e raccoglie le altezze*/
+    /* Inizializzazione delle variabili */
+    i = righe - 1;
+    j = colonne - 1;
+    k = 0; /* Numero di celle nel percorso */
+    sum_diff_heights_squared = 0;
+
+    /* Calcolo del numero delle celle (k) e della sommatoria delle differenze delle altezze */
     while (i != 0 || j != 0) {
         k++;
-        current_height = matrice[i][j];
+        curr_height = matrice[i][j];
+
+        /* Determina la prossima altezza basata sul percorso */
         if (path[i][j] == 1) {
-            next_height = matrice[i-1][j];
+            prev_height = matrice[i-1][j];
         } else if (path[i][j] == 2) {
-            next_height = matrice[i][j-1];
+            prev_height = matrice[i][j-1];
         }
-        sum_diff_heights_squared += (current_height - next_height) * (current_height - next_height);
+
+        /* Aggiungi la differenza delle altezze al quadrato */
+        sum_diff_heights_squared += (curr_height - prev_height) * (curr_height - prev_height);
+
+        /* Muoviti alla prossima cella nel percorso */
         if (path[i][j] == 1) {
             i--;
         } else if (path[i][j] == 2) {
@@ -29,18 +37,12 @@ int calc_weight(int **matrice, int **path, int righe, int colonne) {
         }
     }
 
-    /* Aggiungi la cella di partenza*/
+    /* Aggiungi la cella di partenza */
     k++;
-    first_height = matrice[0][0];
-    if (righe > 1) {
-        first_next_height = matrice[1][0];
-    } else if (colonne > 1) {
-        first_next_height = matrice[0][1];
-    }
-    sum_diff_heights_squared += (first_height - first_next_height) * (first_height - first_next_height);
-
-    /* Calcola il peso totale usando la formula*/
+    
+    /* Calcola il peso totale usando la formula */
     weight = Ccell * k + Cheight * sum_diff_heights_squared;
+    printf("Ccell: %d, Cheight: %d, sum_diff: %d\n", Ccell, Cheight, sum_diff_heights_squared);
     return weight;
 }
 
