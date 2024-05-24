@@ -19,17 +19,39 @@ typedef struct Graph {
 
 int Ccell;
 int Cheight;
-
+long int totalCost;
+int relax(int src, int dst, int weight, int* dist, int* parent) {
+    long int quad_pow2 = (dist[src] * weight) * (dist[src] * weight);
+    if (dist[src] != INT_MAX && quad_pow2 < dist[dst]) {
+        dist[dst] = quad_pow2;
+        parent[dst] = src;
+        return 1;
+    }
+    return 0;
+}
+/*
+long int sum;
+int relax(int src, int dst, int weight, int* dist, int* parent) {
+    long int quad_pow2 = (dist[src] * weight) * (dist[src] * weight);
+    long int quad_pow2Dst = (dist[dst] * weight) * (dist[dst] * weight);
+    if (dist[dst] != INT_MAX) {
+        dist[dst] = quad_pow2Dst;
+    }
+    if (dist[src] != INT_MAX && quad_pow2 < dist[dst]) {
+        dist[dst] = quad_pow2;
+        parent[dst] = src;
+        sum += quad_pow2;
+        return 1;
+    }
+    return 0;
+}
+*/
 void BellmanFord(Graph* graph, int src, int rows, int cols, int** matrix) {
     int dist[MAX_VERTICES];
     int parent[MAX_VERTICES];
     int V = graph->V;
     int E = graph->E;
-    int i, j;
-    int v;
-    int sum_quad_pow2 = 0;
-    int nCell = 0;
-    int total;
+    int i, j, updated;
 
     for (i = 0; i < V; ++i) {
         dist[i] = INT_MAX;
@@ -37,15 +59,16 @@ void BellmanFord(Graph* graph, int src, int rows, int cols, int** matrix) {
     }
     dist[src] = matrix[0][0];
 
-    for (i = 1; i < V; ++i) {
+    for (i = 0; i < V - 1; ++i) {
+        updated = 0;
         for (j = 0; j < E; ++j) {
             int u = graph->edges[j].src;
             int v = graph->edges[j].dest;
             int weight = graph->edges[j].weight;
-            if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
-                dist[v] = dist[u] + weight;
-                parent[v] = u;
-            }
+            updated |= relax(u, v, weight, dist, parent);
+        }
+        if (!updated) {
+            break;
         }
     }
 
@@ -59,30 +82,33 @@ void BellmanFord(Graph* graph, int src, int rows, int cols, int** matrix) {
         }
     }
 
-    printf("Il percorso minimo dal primo all'ultimo posto è:\n");
-    v = rows * cols - 1;
+    int path[MAX_VERTICES];
+    int path_length = 0;
+    int v = rows * cols - 1;
     while (v != -1) {
-        int row = v / cols;
-        int col = v % cols;
-        printf("(%d, %d) ", row, col);
+        path[path_length++] = v;
         v = parent[v];
-        nCell++;
     }
 
-    for (v = rows * cols - 1; parent[v] != -1; v = parent[v]) {
-        int u = parent[v];
-        int xi = u / cols;
-        int yi = u % cols;
-        int xi1 = v / cols;
-        int yi1 = v % cols;
+    printf("Il percorso minimo dal primo all'ultimo posto è:\n");
+    for (i = path_length - 1; i >= 0; --i) {
+        int row = path[i] / cols;
+        int col = path[i] % cols;
+        printf("(%d, %d) ", row, col);
+    }
+
+    totalCost = 0;
+    for (i = path_length - 1; i > 0; --i) {
+        int xi = path[i] / cols;
+        int yi = path[i] % cols;
+        int xi1 = path[i - 1] / cols;
+        int yi1 = path[i - 1] % cols;
         int diff = matrix[xi][yi] - matrix[xi1][yi1];
-        sum_quad_pow2 += diff * diff;
+        totalCost += diff * diff;
     }
-
-    total = Ccell * nCell + Cheight * sum_quad_pow2;
 
     printf("\nCon peso totale: %d\n", dist[rows * cols - 1]);
-    printf("Il costo totale è: %d\n", total);
+    printf("Il costo totale è: %ld\n", Ccell * path_length + Cheight * totalCost);
 }
 
 int main(int argc, char *argv[]) {
@@ -128,13 +154,13 @@ int main(int argc, char *argv[]) {
             if (i < rows - 1) {
                 graph.edges[graph.E].src = i * cols + j;
                 graph.edges[graph.E].dest = (i + 1) * cols + j;
-                graph.edges[graph.E].weight = matrix[i + 1][j];
+                graph.edges[graph.E].weight = abs(matrix[i + 1][j] - matrix[i][j]);
                 graph.E++;
             }
             if (j < cols - 1) {
                 graph.edges[graph.E].src = i * cols + j;
                 graph.edges[graph.E].dest = i * cols + (j + 1);
-                graph.edges[graph.E].weight = matrix[i][j + 1];
+                graph.edges[graph.E].weight = abs(matrix[i][j + 1] - matrix[i][j]);
                 graph.E++;
             }
         }
