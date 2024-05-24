@@ -3,8 +3,8 @@
 #include <limits.h>
 #include <string.h>
 
-#define MAX_ROWS 150
-#define MAX_COLS 150
+#define MAX_ROWS 250
+#define MAX_COLS 250
 
 int Ccell;
 int Cheight;
@@ -30,9 +30,12 @@ void BellmanFord(int src, int rows, int cols, int** matrix) {
     int V = rows * cols;
     int dist[MAX_ROWS * MAX_COLS];
     int parent[MAX_ROWS * MAX_COLS];
+    int path[MAX_ROWS * MAX_COLS]; 
+    int path_length = 0;
     int i, j, updated;
     int row, col, xi, yi, height_diff;
     int u, v;
+    
     for (i = 0; i < V; ++i) {
         dist[i] = INT_MAX;
         parent[i] = -1;
@@ -74,18 +77,19 @@ void BellmanFord(int src, int rows, int cols, int** matrix) {
         yi = parent[v] % cols;
         height_diff = matrix[row][col] - matrix[xi][yi];
         totalCost += height_diff * height_diff;
+        path[path_length++] = v; 
         v = parent[v];
     }
 
     printf("Il percorso minimo dal primo all'ultimo posto è:\n");
-    v = rows * cols - 1;
-    while (v != -1) {
+    for (i = path_length - 1; i >= 0; --i) { 
+        int v = path[i];
         int row = v / cols;
         int col = v % cols;
         printf("%d %d\n", row, col);
-        v = parent[v];
     }
-    printf("\nCon peso totale: %d\n",+Ccell+ dist[rows * cols - 1]);
+    printf("-1 -1");
+    printf("\nCon peso totale: %d\n",Ccell+ dist[rows * cols - 1]);
 }
 
 int main(int argc, char *argv[]) {
