@@ -1,55 +1,54 @@
 # Bellman-Ford Pathfinding Program
 
-## Descrizione
+## Description
 
-Questo programma implementa l'algoritmo di Bellman-Ford per trovare il percorso minimo in una matrice 2D, considerando i costi di movimento tra le celle. I costi sono determinati dalla differenza di altezza tra le celle e un costo fisso di movimento.
+This program implements the Bellman-Ford algorithm to find the shortest path in a 2D matrix, considering the movement costs between cells. The costs are determined by the height difference between cells and a fixed movement cost.
 
-## Struttura del Programma
+## Program Structure
 
-### Definizioni e Variabili Globali
+### Definitions and Global Variables
 
-- `Ccell`: Costo fisso per spostarsi da una cella all'altra.
-- `Cheight`: Coefficiente che moltiplica il quadrato della differenza di altezza tra le celle.
-- `totalCost`: Costo totale del percorso minimo trovato.
+- `Ccell`: Fixed cost to move from one cell to another.
+- `Cheight`: Coefficient that multiplies the square of the height difference between cells.
+- `totalCost`: Total cost of the found shortest path.
 
-### Funzioni
+### Functions
 
 #### `int relax(int src, int dst, int* dist, int* parent, int** matrix, int cols)`
-Questa funzione rilassa un arco tra una cella sorgente (`src`) e una cella destinazione (`dst`), aggiornando le distanze minime e i predecessori se trova un percorso più conveniente.
+This function relaxes an edge between a source cell (`src`) and a destination cell (`dst`), updating the minimum distances and predecessors if it finds a more convenient path.
 
 #### `void BellmanFord(int src, int rows, int cols, int** matrix)`
-Questa funzione implementa l'algoritmo di Bellman-Ford per trovare il percorso minimo in una matrice 2D. Inizializza le distanze e i predecessori, e utilizza la funzione `relax` per aggiornare i costi dei percorsi. Alla fine, calcola il percorso minimo e il costo totale, stampando il percorso e il costo.
+This function implements the Bellman-Ford algorithm to find the shortest path in a 2D matrix. It initializes the distances and predecessors, and uses the `relax` function to update the path costs. Finally, it calculates the shortest path and total cost, printing the path and cost.
 
-### Funzione Principale
+### Main Function
 
 #### `int main(int argc, char *argv[])`
-La funzione principale legge i dati di input da un file o dallo standard input (`stdin`), inizializza la matrice con i valori letti, e chiama la funzione `BellmanFord` per trovare il percorso minimo. Infine, libera la memoria allocata per la matrice.
+The main function reads input data from a file or standard input (`stdin`), initializes the matrix with the read values, and calls the `BellmanFord` function to find the shortest path. Finally, it frees the memory allocated for the matrix.
 
-## Utilizzo
+## Usage
 
-### Compilazione
+### Compilation
 
-Per compilare il programma, eseguire il seguente comando:
+To compile the program, run the following command:
 
 ```bash
- gcc -std=c90 -Wall -Wpedantic bellman-ford.c -o bellman-ford
+gcc -std=c90 -Wall -Wpedantic bellman-ford.c -o bellman-ford
 ```
 
-### Esecuzione
+### Execution
 
-Il programma deve essere eseguito passando il nome del file di input come argomento.
+The program should be executed by passing the name of the input file as an argument.
 
 ```bash
 ./bellman-ford test0.in
 ```
 
-### Formato del File di Input
+### Input File Format
 
-Il file di input deve contenere i seguenti valori, in ordine:
+The input file must contain the following values, in order:
 
-1. `Ccell`: Il costo fisso per spostarsi da una cella all'altra.
-2. `Cheight`: Il coefficiente che moltiplica il quadrato della differenza di altezza tra le celle.
-3. `rows`: Il numero di righe della matrice.
-4. `cols`: Il numero di colonne della matrice.
-5. I valori della matrice, uno per cella, disposti in ordine di riga.
-
+1. `Ccell`: The fixed cost to move from one cell to another.
+2. `Cheight`: The coefficient that multiplies the square of the height difference between cells.
+3. `rows`: The number of rows in the matrix.
+4. `cols`: The number of columns in the matrix.
+5. The values of the matrix, one per cell, arranged in row-major order.
