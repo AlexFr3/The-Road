@@ -37,7 +37,7 @@ Per compilare il programma, eseguire il seguente comando:
 
 ### Esecuzione
 
-Il programma può essere eseguito passando il nome del file di input come argomento. Se il file di input è "-", il programma leggerà i dati dallo standard input.
+Il programma deve essere eseguito passando il nome del file di input come argomento.
 
 ```bash
 ./bellman-ford test0.in
